@@ -15,7 +15,7 @@ class SecurityConfig(){
   def filterChain(http: HttpSecurity): DefaultSecurityFilterChain = {
     http
       .authorizeHttpRequests()
-      .requestMatchers(request => request.getRequestURI == "/" || request.getRequestURI == "/public").permitAll()
+      .requestMatchers(request => request.getRequestURI == "/" || request.getRequestURI == "/auth0").permitAll()
       .and()
       .build()
   }
