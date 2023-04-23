@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod.GET
 import org.springframework.web.bind.annotation.{RequestMapping, RestController}
 import com.google.api.services.calendar.{Calendar, CalendarScopes}
 import com.google.auth.http.HttpCredentialsAdapter
-import com.secondave.service.ManagementApiService
+import com.secondave.service.{GoogleService, ManagementApiService}
 
 import java.io.FileInputStream
 import java.time.LocalDateTime
@@ -22,29 +22,13 @@ import java.util.Collections
 
 @RestController
 class HelloController:
-  private val JSON_FACTORY = GsonFactory.getDefaultInstance
-
   @Autowired
-  val service: ManagementApiService = null
-
-  @Value("${application.name}")
-  val appName: String = null
+  val managementApiService: ManagementApiService = null
+  @Autowired
+  val googleService: GoogleService = null
 
   @RequestMapping(path = Array("/"), method = Array(GET))
-  def root(): String = {
-    val credentials: GoogleCredentials = GoogleCredentials
-      .fromStream(new FileInputStream("C:\\Users\\jacki\\Downloads\\second-ave-dffbefd5c686.json"))
-      .createScoped(Collections.singleton(CalendarScopes.CALENDAR_READONLY))
-    credentials.refreshIfExpired()
-    val HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport
-    val calendar = new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, new HttpCredentialsAdapter(credentials))
-      .setApplicationName(appName)
-      .build()
-    calendar.calendars().get("primary").execute().getSummary
-  }
+  def root() = googleService.getCalendarSummary
 
   @RequestMapping(path = Array("/auth0"), method = Array(GET))
-  def auth0() = {
-    val mgmt = service.getApi
-    mgmt.users.list(new UserFilter()).execute.getBody
-  }
+  def auth0() = managementApiService.getApi.users.list(new UserFilter()).execute.getBody
