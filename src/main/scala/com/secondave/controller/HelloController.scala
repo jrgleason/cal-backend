@@ -24,11 +24,6 @@ import java.util.Collections
 class HelloController:
   @Autowired
   val managementApiService: ManagementApiService = null
-  @Autowired
-  val googleService: GoogleService = null
-
-  @RequestMapping(path = Array("/"), method = Array(GET))
-  def root() = googleService.getCalendarSummary
 
   @RequestMapping(path = Array("/auth0"), method = Array(GET))
   def auth0() = managementApiService.getApi.users.list(new UserFilter()).execute.getBody
