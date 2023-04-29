@@ -1,51 +1,33 @@
 package com.secondave.config
 
 //
+import com.auth0.jwt.JWT
+import com.auth0.jwt.algorithms.Algorithm
+import com.auth0.jwt.interfaces.{DecodedJWT, JWTVerifier}
+import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.stereotype.Component
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.DefaultSecurityFilterChain
-//
-//
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.web.filter.OncePerRequestFilter
+
 @Component
 @EnableWebSecurity
-class SecurityConfig(){
+class SecurityConfig() {
+
   @Bean
   def filterChain(http: HttpSecurity): DefaultSecurityFilterChain = {
-    http
-      .authorizeHttpRequests()
-      .anyRequest().permitAll()
-//      .requestMatchers(request => request.getRequestURI == "/" || request.getRequestURI == "/auth0").permitAll()
-      .and()
-      .build()
+   http.authorizeHttpRequests()
+      .requestMatchers("/").permitAll()
+      .anyRequest().authenticated()
+      .and().cors()
+      .and().oauth2ResourceServer().jwt()
+    http.build()
   }
-//
-//  override def configure(http: HttpSecurity): Unit = {
-//    http
-//      .addFilterBefore(new Auth0Filter(auth0Config), classOf[AbstractPreAuthenticatedProcessingFilter])
-//      .authorizeRequests()
-//      .requestMatchers(request => request.getRequestURI == "/" || request.getRequestURI == "/public").permitAll()
-//      .requestMatchers(request => request.getRequestURI.startsWith("/api/")).authenticated()
-//      .and()
-//      .oauth2ResourceServer()
-//      .jwt()
-//  }
-//
 }
-//
-//class Auth0Filter(val auth0Config: Auth0Config) extends AbstractPreAuthenticatedProcessingFilter {
-//
-//  override def getPreAuthenticatedPrincipal(request: HttpServletRequest): AnyRef = {
-//    auth0Config.validateJwt(request.getHeader("Authorization"))
-//    // If the JWT is valid, return the authenticated user principal
-//    // Here, you can retrieve the user information from the JWT claims
-//    // and return a custom principal object representing the authenticated user
-//  }
-//
-//  override def getPreAuthenticatedCredentials(request: HttpServletRequest): AnyRef = {
-//    // This method should return a credentials object, which is not used in this implementation
-//    null
-//  }
-//
-//}

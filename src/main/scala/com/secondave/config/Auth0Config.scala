@@ -5,7 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
 
-//@Configuration
+@Configuration
 class Auth0Config(
                    @Value("${auth0.audience}") audience: String,
                    @Value("${auth0.issuer}") issuer: String,

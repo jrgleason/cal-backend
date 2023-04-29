@@ -50,6 +50,8 @@ class GoogleService @Autowired()(
       .execute()
       .getSummary
   }
+
+
   def getEventsForDay: Events = {
     credentials.refreshIfExpired()
     val date = LocalDate.of(2023, 4, 23)
