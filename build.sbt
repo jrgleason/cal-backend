@@ -18,7 +18,7 @@ organizationHomepage := Some(url("http://secondave.net"))
 libraryDependencies ++= Seq(
   "org.springframework.boot" % "spring-boot-starter-web" % "3.0.6",
   "org.springframework.boot" % "spring-boot-starter-security" % "3.0.6",
-  "org.springframework.security" % "spring-boot-starter-oauth2-resource-server" % "3.0.6",
+  "org.springframework.boot" % "spring-boot-starter-oauth2-resource-server" % "3.0.6",
   "com.auth0" % "auth0" % "2.1.0",
   "com.auth0" % "java-jwt" % "4.4.0",
   "com.google.auth" % "google-auth-library-oauth2-http" % "1.3.0",
