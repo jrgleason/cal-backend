@@ -3,20 +3,22 @@ package com.secondave.service
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.client.util.DateTime
-import com.google.api.services.calendar.model.Events
 import com.google.api.services.calendar.{Calendar, CalendarScopes}
+import com.google.api.services.calendar.model.{Event, Events}
 import com.google.auth.http.HttpCredentialsAdapter
 import com.google.auth.oauth2.GoogleCredentials
 import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Service
+import com.secondave.model.calendar.{EventDay, Event as IEvent}
 
 import java.io.FileInputStream
 import java.time.{LocalDate, ZoneId}
 import java.util.Collections
 import java.util.Date
+import java.util.Calendar as JCalendar
 import scala.annotation.meta.beanSetter
 import scala.beans.BeanProperty
-import scala.jdk.CollectionConverters._
+import scala.jdk.CollectionConverters.*
 
 @Service
 class GoogleService @Autowired()(
@@ -51,24 +53,30 @@ class GoogleService @Autowired()(
       .getSummary
   }
 
-
-  def getEventsForDay: Events = {
+  def addEvent(event:Event) = {
     credentials.refreshIfExpired()
-    val date = LocalDate.of(2023, 4, 23)
+    new Calendar.Builder(
+      HTTP_TRANSPORT,
+      JSON_FACTORY,
+      new HttpCredentialsAdapter(credentials)
+    )
+      .setApplicationName(appName)
+      .build()
+      .events()
+      .insert(calendarId, event)
+      .execute()
+  }
+
+  def getEventsForDay(day: Date): Events = {
+    credentials.refreshIfExpired()
     val startOfDay = new DateTime(
-      Date.from(
-        date.atStartOfDay(ZoneId.systemDefault())
-            .toInstant
-      )
+      day
     )
-    val endOfDay = new DateTime(
-      Date.from(
-        date.plusDays(1)
-          .atStartOfDay(
-            ZoneId.systemDefault()
-          ).toInstant
-      )
-    )
+    val c: JCalendar = JCalendar.getInstance()
+    c.setTime(day)
+    c.add(JCalendar.DATE, 2)
+    val endOfDay = new DateTime(c.getTime)
+    System.out.println("Getting from "+startOfDay.toStringRfc3339+" To "+endOfDay.toStringRfc3339+" For "+calendarId)
     new Calendar.Builder(
       HTTP_TRANSPORT,
       JSON_FACTORY,
@@ -82,4 +90,15 @@ class GoogleService @Autowired()(
       .setTimeMax(endOfDay)
       .execute()
   }
+
+  def getEventDay(day: Date): EventDay =
+    EventDay(day, getEventsForDay(day))
+}
+object GoogleService {
+  def convertEvent(event: IEvent): Event = new Event()
+      .setSummary(event.summary)
+      .setDescription(event.description)
+      .setLocation(event.location)
+      .setStart(event.start.getDateTime())
+      .setEnd(event.end.getDateTime())
 }

@@ -25,8 +25,11 @@ class HelloController:
   @Autowired
   val managementApiService: ManagementApiService = null
 
-  @RequestMapping(path = Array("/auth0"), method = Array(GET))
-  def auth0() = managementApiService.getApi.users.list(new UserFilter()).execute.getBody
+//  @RequestMapping(path = Array("/auth0"), method = Array(GET))
+//  def auth0() = managementApiService.getApi.users.list(new UserFilter()).execute.getBody
 
   @RequestMapping(path = Array("/"), method = Array(GET))
   def hello() = "Hello World!";
+
+  @RequestMapping(path = Array("/protected"), method = Array(GET))
+  def protect() = "This is protected!";
