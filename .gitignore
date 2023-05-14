@@ -10,3 +10,5 @@ hs_err_pid*
 target
 application-private.yml
 application-private-ij.yml
+application-private-*.yml
+key-*.json

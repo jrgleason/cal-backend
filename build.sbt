@@ -26,6 +26,12 @@ libraryDependencies ++= Seq(
   "com.google.apis" % "google-api-services-calendar" % "v3-rev20220715-2.0.0",
   "com.auth0" % "auth0" % "2.1.0",
 )
+assembly / assemblyMergeStrategy :=  {
+  case PathList("META-INF", "spring.factories") => MergeStrategy.filterDistinctLines // Not sure if something in this path is needed anymore
+  case PathList("META-INF", "spring", "org.springframework.boot.autoconfigure.AutoConfiguration.imports") => MergeStrategy.filterDistinctLines
+  case PathList("META-INF", xs@_*) => MergeStrategy.discard
+  case _ => MergeStrategy.first
+}
 
 /*
   Packaging plugin

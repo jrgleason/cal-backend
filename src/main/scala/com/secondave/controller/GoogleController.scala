@@ -14,9 +14,7 @@ import java.util.Date
 class GoogleController {
   @Autowired
   val googleService: GoogleService = null
-
-
-
+  
   @GetMapping(path = Array("/calendar/summary"))
   def root: String = googleService.getCalendarSummary
 
